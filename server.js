@@ -85,7 +85,7 @@ app.get('/patients/:searchText', async (req, res) => {
 app.post('/patients/:create', async (req, res) => {
     const patient = req.body; //request จาก body ในหน้าเว็บ by user (ต้องก.insertข้อมูลเข้า)
     console.log("patient: ", patient)
-        var insertSQL = "INSERT INTO hospital.patients (HN, Name, Patient_Rights_1, Patient_Rights_2, Patient_Rights_3, Chronic_Disease, Address, Phone) VALUES('" + patient.HN + "', '" + patient.Name + "', '" + patient.Right1 + "', '" + patient.Right2 + "', '" + patient.Right3 + "', '" + patient.Chronic + "', '" + patient.Address + "', '" + patient.Phone + "');";
+    var insertSQL = "INSERT INTO hospital.patients (HN, Name, Patient_Rights_1, Patient_Rights_2, Patient_Rights_3, Chronic_Disease, Address, Phone) VALUES('" + patient.HN + "', '" + patient.Name + "', '" + patient.Right1 + "', '" + patient.Right2 + "', '" + patient.Right3 + "', '" + patient.Chronic + "', '" + patient.Address + "', '" + patient.Phone + "');";
     //ชื่อที่เราตั้งในนี้กับส่วนที่userส่งมา(body) ตั้งไม่เหมือนกัน ดูดีๆ
     try {
         await con.query(insertSQL, function (err, results) {
@@ -103,18 +103,17 @@ app.post('/patients/:create', async (req, res) => {
 });
 
 // Update API
-app.put('/patients/update/', async (req, res) => {
+app.put('/patients/update/:id', async (req, res) => {
     const patient = req.body;
-    console.log("patient: ", patient)
-    const patientID = patient.ID;
+    const patientID = req.params.id;
     var updateSQL = "UPDATE patients SET HN = '" + patient.HN + "', Name = '" + patient.Name + "', Patient_Rights_1 = '" + patient.Right1 + "', Patient_Rights_2 = '" + patient.Right2 + "', Patient_Rights_3 = '" + patient.Right3 + "', Chronic_Disease= '" + patient.Chronic + "', Address = '" + patient.Address + "', Phone = '" + patient.Phone + "' WHERE (id = '" + patientID + "'); ";    try {
         await con.query(updateSQL, function (err) {
             if (err) {
                 console.log('database connection error!, ', err);
-                res.status(500).send();
+                res.status(500).send('Database error');
             } else {
                 console.log(patientID, " is updated.");
-                res.status(200).send();
+                res.status(200).send('Patient updated successfully');
             }
         });
     } catch (err) {
@@ -124,9 +123,28 @@ app.put('/patients/update/', async (req, res) => {
     }
 })
 
+app.delete('/patients/delete/:id', async(req, res) => {
+    const patient = req.body;
+    const patientID  = patient.patientID;
+    var deleteSQL = "DELETE FROM patients WHERE ID = '" + patientID + "'";
+    try {
+        await con.query(deleteSQL, function (err, results) { // await จนกว่าจะดึงข้อมูลได้สำเร็จ
+            if(err){
+                console.log('database connection error!, ', err);
+            }else{
+                console.log("Patient ID ",patientID, " is deleted."); // ดึงข้อมูลมาจาก DB แล้วแปลงมาเป็น JSON ให้อ่านออก
+                res.status(200).send(results);
+                }   
+            });
+        } catch (err) {
+            console.log(err);
+            process.exit(1);
+    }
+})
+
 // API endpoint เพื่อดึงข้อมูลสิทธิการรักษาทั้งหมด
 app.get('/rights', async (req, res) => {
-    var readSQL = "SELECT DISTINCT Patient_Rights FROM rights;";
+    var readSQL = "SELECT Patient_Rights FROM rights;";
     try {
         await con.query(readSQL, function (err, results) {
             if (err) {
@@ -140,4 +158,4 @@ app.get('/rights', async (req, res) => {
         console.log(err);
         res.status(500).send();
     }
-});
+})
