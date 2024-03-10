@@ -85,7 +85,7 @@ app.get('/patients/:searchText', async (req, res) => {
 app.post('/patients/:create', async (req, res) => {
     const patient = req.body; //request จาก body ในหน้าเว็บ by user (ต้องก.insertข้อมูลเข้า)
     console.log("patient: ", patient)
-    var insertSQL = "INSERT INTO hospital.patients (HN, Name, Patient_Rights_1, Patient_Rights_2, Patient_Rights_3, Chronic_Disease, Address, Phone) VALUES('" + patient.HN + "', '" + patient.name + "', '" + patient.right1 + "', '" + patient.right2 + "', '" + patient.right3 + "', '" + patient.chronic + "', '" + patient.address + "', '" + patient.phone + "');";
+        var insertSQL = "INSERT INTO hospital.patients (HN, Name, Patient_Rights_1, Patient_Rights_2, Patient_Rights_3, Chronic_Disease, Address, Phone) VALUES('" + patient.HN + "', '" + patient.Name + "', '" + patient.Right1 + "', '" + patient.Right2 + "', '" + patient.Right3 + "', '" + patient.Chronic + "', '" + patient.Address + "', '" + patient.Phone + "');";
     //ชื่อที่เราตั้งในนี้กับส่วนที่userส่งมา(body) ตั้งไม่เหมือนกัน ดูดีๆ
     try {
         await con.query(insertSQL, function (err, results) {
