@@ -9,7 +9,7 @@ xhttp.send();
 xhttp.onreadystatechange = function () {
     if (this.readyState == 4 && this.status == 200) {
         rightList = JSON.parse(this.responseText);
-        console.log(rightList);
+        showUserCreateBox();
     }
 }
 //////////////////////////////////// show right options ///////////////////////////////////
@@ -59,14 +59,19 @@ function patientDelete(id) {
     const xhttp = new XMLHttpRequest();
     xhttp.open("DELETE", "http://localhost:3000/patients/delete/" + id);
     xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-    xhttp.send();
+    xhttp.send(JSON.stringify({ //JSON.stringify() = converts a JavaScript object or value to a JSON string
+        "patientID": id  // Corrected from patientID to id
+    }));
     xhttp.onreadystatechange = function () {
         if (this.readyState == 4) {
-            Swal.fire("Good job!", "ลบข้อมูลผู้ป่วยสำเร็จ", "success");
-            loadTable();
-        } else {
-            Swal.fire("Failed!", "ลบข้อมูลผู้ป่วยไม่สำเร็จ", "error");
-            loadTable();
+            if (this.status == 200) {
+                const objects = JSON.parse(this.responseText);
+                Swal.fire("Good job!", "ลบข้อมูลผู้ป่วยสำเร็จ", "success");
+                loadTable();
+            } else {
+                Swal.fire("Failed!", "ลบข้อมูลผู้ป่วยไม่สำเร็จ", "error");
+                loadTable();
+            }
         }
     };
 }
@@ -191,7 +196,7 @@ function showUserCreateBox() {
 
             '<div class="mb-3"><label for="Phone" class="form-label float-start">เบอร์ติดต่อ</label>' +
             '<input class="form-control" id="Phone" placeholder="0XX XXX XXXX"></div>',
-            
+
         focusConfirm: false,
         showCancelButton: true,
         cancelButtonText: 'ยกเลิก',
