@@ -52,6 +52,10 @@ loadTable();
 
 //////////////////////////////////// Load Table ///////////////////////////////////
 
+//////////////////////////////////// SEARCH ///////////////////////////////////
+
+//////////////////////////////////// SEARCH ///////////////////////////////////
+
 ////////////////////////////////// DELETE /////////////////////////////////
 
 function patientDelete(id) {
@@ -82,39 +86,39 @@ function patientDelete(id) {
 
 function showEditbox(id) {
     const xhttp = new XMLHttpRequest();
-    xhttp.open("GET", "http://localhost:3000/patients/" + id);
+    xhttp.open("GET", "http://localhost:3000/editpatient/" + id);
     xhttp.send();
     xhttp.onreadystatechange = function () {
         if (this.readyState == 4 && this.status == 200) {
-            const patientData = JSON.parse(this.responseText);
+            const patientData = JSON.parse(this.responseText)[0];
             console.log(patientData);
 
             Swal.fire({
                 title: 'แก้ไขข้อมูลผู้ป่วย',
                 html:
-                    '<div class="mb-3"><label for="HN" class="form-label float-start">HN</label>' +
-                    '<input class="form-control" id="HN" value="' + patientData["HN"] + '" disabled></div>' +
+                '<div class="mb-3"><label for="HN" class="form-label float-start">HN</label>' +
+                '<input class="form-control" id="HN" value="' + patientData["HN"] + '" disabled></div>' +
 
-                    '<div class="mb-3"><label for="Name" class="form-label float-start">ชื่อ-สกุลผู้ป่วย</label>' +
-                    '<input class="form-control" id="Name" value="' + patientData["Name"] + '"></div>' +
+                '<div class="mb-3"><label for="Name" class="form-label float-start">ชื่อ-สกุลผู้ป่วย</label>' +
+                '<input class="form-control" id="Name" value="' + patientData["Name"] + '"></div>' +
 
-                    '<div class="mb-3"><label for="Right1" class="form-label float-start">สิทธิการรักษา 1</label>' +
-                    '<select class="form-select form-select-sm" id="Right1">' + getRightOptionsHTML('Right1', patientData["Right1"]) + '</select></div>' +
+                '<div class="mb-3"><label for="Right1" class="form-label float-start">สิทธิการรักษา 1</label>' +
+                '<select class="form-select form-select-sm" id="Right1">' + getRightOptionsHTML('Right1', patientData["Right1"]) + '</select></div>' +
 
-                    '<div class="mb-3"><label for="Right2" class="form-label float-start">สิทธิการรักษา 2</label>' +
-                    '<select class="form-select form-select-sm" id="Right2">' + getRightOptionsHTML('Right2', patientData["Right2"]) + '</select></div>' +
+                '<div class="mb-3"><label for="Right2" class="form-label float-start">สิทธิการรักษา 2</label>' +
+                '<select class="form-select form-select-sm" id="Right2">' + getRightOptionsHTML('Right2', patientData["Right2"]) + '</select></div>' +
 
-                    '<div class="mb-3"><label for="Right3" class="form-label float-start">สิทธิการรักษา 3</label>' +
-                    '<select class="form-select form-select-sm" id="Right3">' + getRightOptionsHTML('Right3', patientData["Right3"]) + '</select></div>' +
+                '<div class="mb-3"><label for="Right3" class="form-label float-start">สิทธิการรักษา 3</label>' +
+                '<select class="form-select form-select-sm" id="Right3">' + getRightOptionsHTML('Right3', patientData["Right3"]) + '</select></div>' +
 
-                    '<div class="mb-3"><label for="Chronic" class="form-label float-start">โรคประจำตัว</label>' +
-                    '<input class="form-control" id="Chronic" value="' + patientData["Chronic"] + '"></div>' +
+                '<div class="mb-3"><label for="Chronic" class="form-label float-start">โรคประจำตัว</label>' +
+                '<input class="form-control" id="Chronic" value="' + patientData["Chronic_Disease"] + '"></div>' +
 
-                    '<div class="mb-3"><label for="Address" class="form-label float-start">ที่อยู่</label>' +
-                    '<input class="form-control" id="Address" value="' + patientData["Address"] + '"></div>' +
+                '<div class="mb-3"><label for="Address" class="form-label float-start">ที่อยู่</label>' +
+                '<input class="form-control" id="Address" value="' + patientData["Address"] + '"></div>' +
 
-                    '<div class="mb-3"><label for="Phone" class="form-label float-start">เบอร์ติดต่อ</label>' +
-                    '<input class="form-control" id="Phone" value="' + patientData["Phone"] + '"></div>',
+                '<div class="mb-3"><label for="Phone" class="form-label float-start">เบอร์ติดต่อ</label>' +
+                '<input class="form-control" id="Phone" value="' + patientData["Phone"] + '"></div>',
 
                 focusConfirm: false,
                 showCancelButton: true,
@@ -142,7 +146,7 @@ function showEditbox(id) {
 
                     };
 
-                    xhttpUpdate.open("PUT", "http://localhost:3000/patients/update/" + id);
+                    xhttpUpdate.open("PUT", `http://localhost:3000/patients/update/${id}`);
                     xhttpUpdate.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
                     xhttpUpdate.send(JSON.stringify({
                         'HN': HN,
