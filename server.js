@@ -62,24 +62,31 @@ app.get('/patients', async (req, res) => { //หลังทับมี path �
     }
 });
 
+//////////////////////////////////// Search API ////////////////////////////////////
+
 //readแบบsearch คำที่อยู่หลัง :(colon) = มาจากuser
 app.get('/patients/:searchText', async (req, res) => {
     const { params } = req;
     const searchText = params.searchText
-    var readSQL = "select * from hospital.patients WHERE Patient_Rights_1 LIKE '%" + searchText + "%';";
+    var readSQL = "SELECT * FROM hospital.patients WHERE Patient_Rights_1 LIKE '%" + searchText + "%';";
+    // var readSQL = "SELECT * FROM hospital.patients WHERE Patient_Rights_1 LIKE '%" + searchText + "%' OR Patient_Rights_2 LIKE '%" + searchText + "%' OR Patient_Rights_3 LIKE '%" + searchText + "%';";
     try {
         await con.query(readSQL, function (err, results) {
             if (err) {
                 console.log('database connection error!, ', err);
+                res.status(500).send('Database error');
             } else {
                 res.status(200).send(results);
             }
         });
     } catch (err) {
         console.log(err);
+        res.status(500).send('Server error');
         process.exit(1);
     }
 });
+
+//////////////////////////////////// Search API ////////////////////////////////////
 
 //post = สร้างข้อมูลใหม่
 app.post('/patients/:create', async (req, res) => {
@@ -102,7 +109,7 @@ app.post('/patients/:create', async (req, res) => {
     }
 });
 
-// Update API
+//////////////////////////////////// Update API ////////////////////////////////////
 app.put('/patients/update/:id', async (req, res) => {
     const patient = req.body;
     const patientID = req.params.id;
@@ -123,6 +130,30 @@ app.put('/patients/update/:id', async (req, res) => {
     }
 })
 
+app.get('/editpatient/:id', async (req, res) => {
+    const id = req.params.id;
+    const searchSQL = "SELECT * FROM patients WHERE id = '" + id + "'";
+
+    try {
+        con.query(searchSQL, function (err, results) {
+            if (err) {
+                console.log('Database connection error:', err);
+                res.status(500).send('Database error');
+            } else {
+                console.log("Result: " + JSON.stringify(results));
+                res.status(200).send(results);
+            }
+        });
+    } catch (err) {
+        console.log('Error:', err);
+        res.status(500).send('Server error');
+    }
+});
+
+//////////////////////////////////// Update API ////////////////////////////////////
+
+//////////////////////////////////// DELETE ////////////////////////////////////
+
 app.delete('/patients/delete/:id', async(req, res) => {
     const patient = req.body;
     const patientID  = patient.patientID;
@@ -142,6 +173,10 @@ app.delete('/patients/delete/:id', async(req, res) => {
     }
 })
 
+//////////////////////////////////// DELETE ////////////////////////////////////
+
+//////////////////////////////////// RIGHTS ////////////////////////////////////
+
 // API endpoint เพื่อดึงข้อมูลสิทธิการรักษาทั้งหมด
 app.get('/rights', async (req, res) => {
     var readSQL = "SELECT Patient_Rights FROM rights;";
@@ -159,3 +194,5 @@ app.get('/rights', async (req, res) => {
         res.status(500).send();
     }
 })
+
+//////////////////////////////////// RIGHTS ////////////////////////////////////
