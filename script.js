@@ -71,7 +71,7 @@ loadTable();
 //////////////////////////////////// SEARCH ///////////////////////////////////
 
 function patientSearch() {
-    let searchText = document.getElementById("KeywordSearch").value;
+    const searchText = document.getElementById("KeywordSearch").value;
     console.log(searchText)
     if (searchText == "") {
         loadTable()
@@ -325,3 +325,96 @@ function createNewPatient() {
     };
 }
 
+/////////////////////////// AUTHENTICATION //////////////////////////////
+var auth = { status: false, user: null }
+
+checkAuth();
+
+function checkAuth() {
+    if (Boolean(localStorage.getItem("auth")) === true) {
+        auth.status = true;
+        auth.user = localStorage.getItem("user");
+
+        document.getElementById("searchBar").style = "display: block";
+        document.getElementById("user").innerHTML = "ยินดีต้อนรับ " + auth.user;
+        document.getElementById("bodyContent").innerHTML =
+            "<div class='table-responsive my-2'>" +
+            "<table class='table shadow'>" +
+            "<thead class='table-secondary'>" +
+            "<tr>" +
+            "<th scope='col'>#</th>" +
+            "<th scope='col'>HN</th>" +
+            "<th scope='col'>ชื่อ-สกุล</th>" +
+            "<th scope='col'>สิทธิ์ 1</th>" +
+            "<th scope='col'>สิทธิ์ 2</th>" +
+            "<th scope='col'>สิทธิ์ 3</th>" +
+            "<th scope='col'>โรคประจำตัว</th>" +
+            "<th scope='col'>ที่อยู่</th>" +
+            "<th scope='col'>เบอร์ติดต่อ</th>" +
+            "<th scope='col'></th>" +
+            "</tr>" +
+            "</thead>" +
+            "<tbody id='patientTable'>" +
+            "</tbody>" +
+            "</table>"
+            "</div>" +
+        loadTable();
+
+    } else {
+        document.getElementById("searchBar").style = "display: none";;
+        document.getElementById("bodyContent").innerHTML =
+            "<div class='card align-middle m-3 mx-auto' style='width: 20rem;'>" +
+            "<div class='card-header bg-secondary text-light m-3'>" +
+            "<span class='d-inline'><i class='bi bi-person-square me-2'></i>" +
+            "ลงชื่อเข้าใช้งาน</span>" +
+            "</div>" +
+            "<div class='card-body'>" +
+            "<div class='mb-3'><label for='Username' class='form-label float-start'>Username:</label>" +
+            "<input class='form-control' id='Username' placeholder='username'></div>" +
+            "<div class='mb-3'><label for='Password' class='form-label float-start'>Password:</label>" +
+            "<input class='form-control' id='Password' type='password' placeholder='password'></div>" +
+            "<a onClick='Login()' class='btn btn-secondary float-end'>เข้าสู่ระบบ</a>" +
+            "</div>" +
+            "</div>"
+    }
+}
+
+function Login() {
+    const xhttp = new XMLHttpRequest();
+    xhttp.open("POST", "http://localhost:3000/login/");
+    xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+    xhttp.send(JSON.stringify({
+        'user': document.getElementById("Username").value,
+        'pass': document.getElementById("Password").value,
+    }));
+    xhttp.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+            const objects = JSON.parse(this.responseText);
+            if (objects.length > 0) {
+                Swal.fire(
+                    'Good job!',
+                    'ลงชื่อเข้าใช้สำเร็จ',
+                    'success'
+                )
+                localStorage.setItem("auth", true);
+                localStorage.setItem("user", objects[0]['username']);
+                checkAuth();
+            } else {
+                Swal.fire(
+                    'ลงชื่อเข้าใช้ไม่สำเร็จ',
+                    'ชื่อผู้ใช้งานหรือรหัสผ่านไม่ถูกต้อง',
+                    'error'
+                )
+            }
+        }
+    };
+}
+
+function Logout() {
+    auth.status = false;
+    auth.user = null;
+    localStorage.removeItem('auth');
+    localStorage.removeItem('user');
+    checkAuth();
+}
+/////////////////////////// AUTHENTICATION //////////////////////////////
