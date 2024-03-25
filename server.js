@@ -1,3 +1,4 @@
+
 const mysql = require('mysql');
 const config = require('./config');
 const express = require('express'); //เราจะสร้างเป็น app ใหม่ที่ inherit(เลือกค.canมาบางอย่างที่เหมาะกับ backend ข.เรา)
@@ -62,8 +63,30 @@ app.get('/patients', async (req, res) => { //หลังทับมี path �
     }
 });
 
-//////////////////////////////////// Search API ////////////////////////////////////
+//////////////////////////////////// Login ////////////////////////////////////
+app.post('/login/', async (req, res) => {
+    const params = req.body;
+    const username = params.user;
+    const password = params.pass;
 
+    var loginSQL = "SELECT * FROM users WHERE username='" + username + "' and password='" + password + "';"
+
+    try {
+        await con.query(loginSQL, function (err, results) {
+            if (err) {
+                console.log('database connection error!, ', err);
+            } else {
+                res.status(200).send(results);
+            }
+        });
+    } catch (err) {
+        console.log(err);
+        process.exit(1);
+    }
+});
+//////////////////////////////////// Login ////////////////////////////////////
+
+//////////////////////////////////// Search API ////////////////////////////////////
 //readแบบsearch คำที่อยู่หลัง :(colon) = มาจากuser
 app.get('/patients/:searchText', async (req, res) => {
     const { params } = req;
@@ -76,6 +99,7 @@ app.get('/patients/:searchText', async (req, res) => {
                 console.log('database connection error!, ', err);
                 res.status(500).send('Database error');
             } else {
+                console.log("Result: " + JSON.stringify(results));
                 res.status(200).send(results);
             }
         });
@@ -85,7 +109,6 @@ app.get('/patients/:searchText', async (req, res) => {
         process.exit(1);
     }
 });
-
 //////////////////////////////////// Search API ////////////////////////////////////
 
 //post = สร้างข้อมูลใหม่
@@ -113,7 +136,7 @@ app.post('/patients/:create', async (req, res) => {
 app.put('/patients/update/:id', async (req, res) => {
     const patient = req.body;
     const patientID = req.params.id;
-    var updateSQL = "UPDATE patients SET HN = '" + patient.HN + "', Name = '" + patient.Name + "', Patient_Rights_1 = '" + patient.Right1 + "', Patient_Rights_2 = '" + patient.Right2 + "', Patient_Rights_3 = '" + patient.Right3 + "', Chronic_Disease= '" + patient.Chronic + "', Address = '" + patient.Address + "', Phone = '" + patient.Phone + "' WHERE (id = '" + patientID + "'); ";    try {
+    var updateSQL = "UPDATE patients SET HN = '" + patient.HN + "', Name = '" + patient.Name + "', Patient_Rights_1 = '" + patient.Right1 + "', Patient_Rights_2 = '" + patient.Right2 + "', Patient_Rights_3 = '" + patient.Right3 + "', Chronic_Disease= '" + patient.Chronic + "', Address = '" + patient.Address + "', Phone = '" + patient.Phone + "' WHERE (id = '" + patientID + "'); "; try {
         await con.query(updateSQL, function (err) {
             if (err) {
                 console.log('database connection error!, ', err);
@@ -149,34 +172,30 @@ app.get('/editpatient/:id', async (req, res) => {
         res.status(500).send('Server error');
     }
 });
-
 //////////////////////////////////// Update API ////////////////////////////////////
 
 //////////////////////////////////// DELETE ////////////////////////////////////
-
-app.delete('/patients/delete/:id', async(req, res) => {
+app.delete('/patients/delete/:id', async (req, res) => {
     const patient = req.body;
-    const patientID  = patient.patientID;
+    const patientID = patient.patientID;
     var deleteSQL = "DELETE FROM patients WHERE ID = '" + patientID + "'";
     try {
         await con.query(deleteSQL, function (err, results) { // await จนกว่าจะดึงข้อมูลได้สำเร็จ
-            if(err){
+            if (err) {
                 console.log('database connection error!, ', err);
-            }else{
-                console.log("Patient ID ",patientID, " is deleted."); // ดึงข้อมูลมาจาก DB แล้วแปลงมาเป็น JSON ให้อ่านออก
+            } else {
+                console.log("Patient ID ", patientID, " is deleted."); // ดึงข้อมูลมาจาก DB แล้วแปลงมาเป็น JSON ให้อ่านออก
                 res.status(200).send(results);
-                }   
-            });
-        } catch (err) {
-            console.log(err);
-            process.exit(1);
+            }
+        });
+    } catch (err) {
+        console.log(err);
+        process.exit(1);
     }
 })
-
 //////////////////////////////////// DELETE ////////////////////////////////////
 
 //////////////////////////////////// RIGHTS ////////////////////////////////////
-
 // API endpoint เพื่อดึงข้อมูลสิทธิการรักษาทั้งหมด
 app.get('/rights', async (req, res) => {
     var readSQL = "SELECT Patient_Rights FROM rights;";
@@ -194,5 +213,4 @@ app.get('/rights', async (req, res) => {
         res.status(500).send();
     }
 })
-
 //////////////////////////////////// RIGHTS ////////////////////////////////////
