@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const { ObjectId } = require('mongodb')
 const app = express();
 const port = 3000;
 
@@ -36,7 +37,8 @@ connectDB();
 app.get('/register', async (req, res) => {
     const client = new MongoClient(uri);
     await client.connect();
-    const users = await client.db('SchoolDB').collection('studentRecord').find({}).sort({ "_id": 1 }).limit(100).toArray();
+    const object = await client.db('SchoolDB').collection('studentRecord').find({}).sort({ "_id": 1 }).toArray();
+    // const users = await client.db('SchoolDB').collection('studentRecord').find({}).sort({ "_id": 1 }).limit(100).toArray();
     await client.close();
     res.status(200).send(users);
 })
@@ -49,7 +51,6 @@ app.post('/register/:create', async (req, res) => {
     const client = new MongoClient(uri);
     await client.connect();
     await client.db('SchoolDB').collection('studentRecord').insertOne({
-        // '_id': object._id,
         'id': object['ID'],
         'first_name': object['First Name'],
         'last_name': object['Last Name'],
@@ -58,7 +59,8 @@ app.post('/register/:create', async (req, res) => {
         'coursework_1': object['CW 1'],
         'coursework_2': object['CW 2'],
         'total_points': object['Total Points'],
-        'student_average': object['Student Average']
+        'student_average': object['Student Average'],
+        'grade': object["grade"]
     });
     await client.close();
     res.status(200).send({
@@ -71,51 +73,53 @@ app.post('/register/:create', async (req, res) => {
 
 
 ////////////////////// Update //////////////////////
-const { ObjectId } = require('mongodb')
 app.put('/register/update/:id', async (req, res) => {
-    const object = req.body;
-    const id = object._id;
-    const client = new MongoClient(uri);
-    await client.connect();
-    await client.db('SchoolDB').collection('studentRecord').updateOne({ '_id': ObjectId(id) }, {
-        "$set": {
-            // '_id': object._id,
-            'id': object['ID'],
-            'first_name': object['First Name'],
-            'last_name': object['Last Name'],
-            'mid_term_exams': object['Mid-term exam'],
-            'final_exam': object['Final exam'],
-            'coursework_1': object['CW 1'],
-            'coursework_2': object['CW 2'],
-            'total_points': object['Total Points'],
-            'student_average': object['Student Average'],
-            'grade': object['Grade']
-        }
-    });
-    await client.close();
-    res.status(200).send({
-        'status': 'ok',
-        'message': 'Object with ID = ' + id + ' is updated',
-        'object': object
-    });
-})
-
-app.get('/editstudent/:id', async (req, res) => {
     const id = req.params.id;
-    const client = new MongoClient(uri);
+    const object = req.body;
+
     try {
         await client.connect();
-        const result = await client.db('SchoolDB').collection('studentRecord').findOne({ '_id': ObjectId(id) });
-        if (result) {
-            res.status(200).send(result);
+        const database = client.db('SchoolDB');
+        const collection = database.collection('register');
+
+        const result = await collection.updateOne({ _id: id }, { $set: object });
+
+        if (result.modifiedCount === 1) {
+            console.log(id, " is updated.");
+            res.status(200).send('Student updated successfully');
         } else {
+            console.log("Student not found");
             res.status(404).send('Student not found');
         }
     } catch (err) {
-        console.error('Error:', err);
-        res.status(500).send('Server error');
+        console.log('Database connection error:', err);
+        res.status(500).send('Database error');
     } finally {
         await client.close();
+    }
+});
+
+app.get('/editstudent/:id', async (req, res) => {
+    const id = req.params.id;
+    // const object = req.body;
+    // const id = object._id;
+    const client = new MongoClient(uri);
+    await client.connect();
+    try {
+        // ค้นหาข้อมูลนักเรียนจาก MongoDB
+        const student = await db.collection('register').findOne({ id: id });
+        
+        if (!student) {
+            console.log('Student not found');
+            res.status(404).send('Student not found');
+            return;
+        }
+
+        console.log('Student found:', student);
+        res.status(200).send(student);
+    } catch (error) {
+        console.error('Error:', error);
+        res.status(500).send('Server error');
     }
 });
 ////////////////////// Update //////////////////////
@@ -123,16 +127,31 @@ app.get('/editstudent/:id', async (req, res) => {
 
 ////////////////////// Delete //////////////////////
 app.delete('/register/delete/:id', async (req, res) => {
-    const id = req.body._id;
+    const id = req.params.id;
     const client = new MongoClient(uri);
-    await client.connect();
-    await client.db('SchoolDB').collection('studentRecord').deleteOne({ '_id': ObjectId(id) });
-    await client.close();
-    res.status(200).send({
-        "status": "ok",
-        "message": 'Object with ID = ' + id + ' is deleted'
-    });
-})
+    // const studentID = studentRecord.ID;
+    try {
+        await client.connect();
+        const studentRecord = await client.db('SchoolDB').collection('studentRecord').findOne({ '_id': ObjectId(id) });
+        // await client.db('SchoolDB').collection('studentRecord').deleteOne({ 'studentID': ObjectId(id) });
+        if (!studentRecord) {
+            return res.status(404).send({
+                "status": "error",
+                "message": 'Object with ID = ' + id + ' not found'
+            });
+        }
+        await client.db('SchoolDB').collection('studentRecord').deleteOne({ '_id': ObjectId(id) });
+        res.status(200).send({
+            "status": "ok",
+            "message": 'Object with ID = ' + id + ' is deleted'
+        });
+    } catch (err) {
+        console.error('Database error:', err);
+        res.status(500).send('Database error');
+    } finally {
+        await client.close();
+    }
+});
 ////////////////////// Delete //////////////////////
 
 
@@ -164,11 +183,12 @@ app.get('/register/:searchText', async (req, res) => {
     } finally {
         await client.close();
     }
-})////////////////////// Search //////////////////////
+})
+////////////////////// Search //////////////////////
 
 
 ////////////////////// Find //////////////////////
-app.get('/register/First Name_text/:searchText', async (req, res) => {
+app.get('/register/First_Name_text/:searchText', async (req, res) => {
     const { params } = req;
     const searchText = parseInt(params.searchText);
     const client = new MongoClient(uri);
