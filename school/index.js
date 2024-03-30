@@ -3,7 +3,7 @@ var lastestID;
 //////////////////////////////////// Load Table ///////////////////////////////////
 function loadTable() {
   const xhttp = new XMLHttpRequest();
-  xhttp.open("GET", "http://localhost:3000/register");
+  xhttp.open("GET", "http://localhost:3000/register/");
   xhttp.send();
   xhttp.onreadystatechange = function () {
     if (this.readyState == 4 && this.status == 200) {
@@ -16,22 +16,23 @@ function loadTable() {
         trHTML += "<tr>";
         trHTML += "<td>" + num + "</td>";
         trHTML += "<td>" + object['ID'] + "</td>";
-        trHTML += "<td>" + object['First Name'] + "</td>";
-        trHTML += "<td>" + object['Last Name'] + "</td>";
-        trHTML += "<td>" + object['Mid-term exam'] + "</td>";
-        trHTML += "<td>" + object['Final exam'] + "</td>";
-        trHTML += "<td>" + object['CW 1'] + "</td>";
-        trHTML += "<td>" + object['CW 2'] + "</td>";
-        trHTML += "<td>" + object['Total Points'] + "</td>";
-        trHTML += "<td>" + object['Student Average'] + "</td>";
+        trHTML += "<td>" + object['First_Name'] + "</td>";
+        trHTML += "<td>" + object['Last_Name'] + "</td>";
+        trHTML += "<td>" + object['Midterm_exam'] + "</td>";
+        trHTML += "<td>" + object['Final_exam'] + "</td>";
+        trHTML += "<td>" + object['CW_1'] + "</td>";
+        trHTML += "<td>" + object['CW_2'] + "</td>";
+        trHTML += "<td>" + object['Total_Points'] + "</td>";
+        trHTML += "<td>" + object['Student_Average'] + "</td>";
         trHTML += "<td>" + object['Grade'] + "</td>";
-        trHTML += '<td><i class ="btn text-primary bi bi-pencil-square" onclick = "showEditbox(' + object["_id"] + ')"></i>';
-        trHTML += '<i class = "btn text-danger bi bi-trash3-fill" onclick = "studentDelete(' + object["_id"] + ')"></i></td>';
+        trHTML += '<td><i class ="btn text-primary bi bi-pencil-square" onclick = "showEditbox(' + object["ID"] + ')"></i>';
+        trHTML += '<i class = "btn text-danger bi bi-trash3-fill" onclick = "studentDelete(' + object["ID"] + ')"></i></td>';
         trHTML += "</tr>";
 
         num++;
         lastestID = object["ID"];
       }
+
       document.getElementById("mytable").innerHTML = trHTML;
     } else {
       var trHTML = "";
@@ -57,32 +58,37 @@ function studentSearch() {
     xhttp.onreadystatechange = function () {
       if (this.readyState == 4 && this.status == 200) {
         console.log(this.responseText);
-        const response = JSON.parse(this.responseText); // Parse the response
-        if (response.status === "ok") {
-          const object = response.data;
-          var trHTML = "";
+        var trHTML = "";
+        var num = 1;
+        const objects = JSON.parse(this.responseText);
+        for (let object of objects) {
           trHTML += "<tr>";
+          trHTML += "<td>" + num + "</td>";
           trHTML += "<td>" + object['ID'] + "</td>";
-          trHTML += "<td>" + object['First Name'] + "</td>";
-          trHTML += "<td>" + object['Last Name'] + "</td>";
-          trHTML += "<td>" + object['Mid-term exam'] + "</td>";
-          trHTML += "<td>" + object['Final exam'] + "</td>";
-          trHTML += "<td>" + object['CW 1'] + "</td>";
-          trHTML += "<td>" + object['CW 2'] + "</td>";
-          trHTML += "<td>" + object['Total Points'] + "</td>";
-          trHTML += "<td>" + object['Student Average'] + "</td>";
+          trHTML += "<td>" + object['First_Name'] + "</td>";
+          trHTML += "<td>" + object['Last_Name'] + "</td>";
+          trHTML += "<td>" + object['Midterm_exam'] + "</td>";
+          trHTML += "<td>" + object['Final_exam'] + "</td>";
+          trHTML += "<td>" + object['CW_1'] + "</td>";
+          trHTML += "<td>" + object['CW_2'] + "</td>";
+          trHTML += "<td>" + object['Total_Points'] + "</td>";
+          trHTML += "<td>" + object['Student_Average'] + "</td>";
           trHTML += "<td>" + object['Grade'] + "</td>";
-          trHTML += '<td><i class ="btn text-primary bi bi-pencil-square" onclick = "showEditbox(\'' + object["ID"] + '\')"></i>';
-          trHTML += '<i class = "btn text-danger bi bi-trash3-fill" onclick = "studentDelete(\'' + object["ID"] + '\')"></i></td>';
+          trHTML += '<td><i class ="btn text-primary bi bi-pencil-square" onclick = "showEditbox(' + object["ID"] + ')"></i>';
+          trHTML += '<i class = "btn text-danger bi bi-trash3-fill" onclick = "studentDelete(' + object["ID"] + ')"></i></td>';
           trHTML += "</tr>";
 
-          document.getElementById("mytable").innerHTML = trHTML;
-        } else {
-          var trHTML = "";
-          trHTML += "<tr><td> Data not found </td></tr>";
-
-          document.getElementById("mytable").innerHTML = trHTML;
+          num++;
+          lastestHN = object["ID"];
         }
+
+        document.getElementById("mytable").innerHTML = trHTML;
+
+      } else {
+        var trHTML = "";
+        trHTML += "<tr><td> Data not found </td></tr>";
+
+        document.getElementById("mytable").innerHTML = trHTML;
       }
     };
     xhttp.send();
@@ -93,7 +99,6 @@ function studentSearch() {
 
 /////////////////////////////////// INSERT NEW //////////////////////////////////
 function showStudentCreateBox() {
-  // const options = getRightOptionsHTML();
   let latestID = "WU";
   const num = parseInt(lastestID.replaceAll("WU", "")) + 1;
   latestID += num;
@@ -101,100 +106,83 @@ function showStudentCreateBox() {
   Swal.fire({
     title: 'เพิ่มข้อมูลนักเรียน',
     html:
-      '<div class="mb-3"><label for="id" class="form-label float-start">รหัสนักเรียน</label>' +
-      '<input class="form-control" id="id" placeholder="รหัสนักเรียน" value="' + "WU" + (parseInt(lastestID.replaceAll("WU", "")) + 1) + '" disabled></div>' +
 
-      '<div class="mb-3"><label for="first_name" class="form-label float-start">ชื่อจริง</label>' +
-      '<input class="form-control" id="first_name" placeholder="ชื่อจริง (ไม่ต้องใส่คำนำหน้า)"></div>' +
+      '<div class="mb-3"><label for="ID" class="form-label float-start">รหัสนักเรียน</label>' +
+      '<input class="form-control" id="ID" placeholder="รหัสนักเรียน" value="' + "WU" + (parseInt(lastestID.replaceAll("WU", "")) + 1) + '" disabled></div>' +
 
-      '<div class="mb-3"><label for="last_name" class="form-label float-start">นามสกุล</label>' +
-      '<input class="form-control" id="last_name" placeholder="นามสกุล"></div>' +
+      '<div class="mb-3"><label for="First_Name" class="form-label float-start">ชื่อจริง</label>' +
+      '<input class="form-control" id="First_Name" placeholder="ชื่อจริง (ไม่ต้องใส่คำนำหน้า)"></div>' +
 
-      '<div class="mb-3"><label for="mid_term_exams" class="form-label float-start">กลางภาค</label>' +
-      '<input class="form-control" id="mid_term_exams" placeholder="คะแนนกลางภาค (ตอบเป็นเปอร์เซ็นต์)"></div>' +
+      '<div class="mb-3"><label for="Last_Name" class="form-label float-start">นามสกุล</label>' +
+      '<input class="form-control" id="Last_Name" placeholder="นามสกุล"></div>' +
 
-      '<div class="mb-3"><label for="final_exam" class="form-label float-start">ปลายภาค</label>' +
-      '<input class="form-control" id="final_exam" placeholder="คะแนนปลายภาค (ตอบเป็นเปอร์เซ็นต์)"></div>' +
+      '<div class="mb-3"><label for="Midterm_exam" class="form-label float-start">กลางภาค</label>' +
+      '<input class="form-control" id="Midterm_exam" placeholder="คะแนนกลางภาค (ตอบเป็นเปอร์เซ็นต์)"></div>' +
 
-      '<div class="mb-3"><label for="coursework_1" class="form-label float-start">งานที่ 1</label>' +
-      '<input class="form-control" id="coursework_1" placeholder="คะแนนงานที่ 1 (ตอบเป็นเปอร์เซ็นต์)"></div>' +
+      '<div class="mb-3"><label for="Final_exam" class="form-label float-start">ปลายภาค</label>' +
+      '<input class="form-control" id="Final_exam" placeholder="คะแนนปลายภาค (ตอบเป็นเปอร์เซ็นต์)"></div>' +
 
-      '<div class="mb-3"><label for="coursework_2" class="form-label float-start">งานที่ 2</label>' +
-      '<input class="form-control" id="coursework_2" placeholder="คะแนนงานที่ 2 (ตอบเป็นเปอร์เซ็นต์)"></div>' +
+      '<div class="mb-3"><label for="CW_1" class="form-label float-start">งานที่ 1</label>' +
+      '<input class="form-control" id="CW_1" placeholder="คะแนนงานที่ 1 (ตอบเป็นเปอร์เซ็นต์)"></div>' +
 
-      '<div class="mb-3"><label for="total_points" class="form-label float-start">คะแนนรวม</label>' +
-      '<input class="form-control" id="total_points" placeholder="คะแนนรวมของนักเรียน"></div>' +
+      '<div class="mb-3"><label for="CW_2" class="form-label float-start">งานที่ 2</label>' +
+      '<input class="form-control" id="CW_2" placeholder="คะแนนงานที่ 2 (ตอบเป็นเปอร์เซ็นต์)"></div>' +
 
-      '<div class="mb-3"><label for="student_average" class="form-label float-start">คะแนนเฉลี่ย</label>' +
-      '<input class="form-control" id="student_average" placeholder="คะแนนเฉลี่ยของนักเรียน"></div>' +
+      '<div class="mb-3"><label for="Total_Points" class="form-label float-start">คะแนนรวม</label>' +
+      '<input class="form-control" id="Total_Points" placeholder="คะแนนรวมของนักเรียน"></div>' +
 
-      '<div class="mb-3"><label for="grade" class="form-label float-start">เกรด</label>' +
-      '<input class="form-control" id="grade" placeholder="เกรดของนักเรียน"></div>',
+      '<div class="mb-3"><label for="Student_Average" class="form-label float-start">คะแนนเฉลี่ย</label>' +
+      '<input class="form-control" id="Student_Average" placeholder="คะแนนเฉลี่ยของนักเรียน"></div>' +
+
+      '<div class="mb-3"><label for="Grade" class="form-label float-start">เกรด</label>' +
+      '<input class="form-control" id="Grade" placeholder="เกรดของนักเรียน"></div>',
 
     focusConfirm: false,
     showCancelButton: true,
     cancelButtonText: 'ยกเลิก',
     confirmButtonText: 'บันทึก',
     preConfirm: () => {
-      createNewStudent();
+      const ID = document.getElementById('ID').value;
+      const First_Name = document.getElementById('First_Name').value;
+      const Last_Name = document.getElementById('Last_Name').value;
+      const Midterm_exam = document.getElementById('Midterm_exam').value;
+      const Final_exam = document.getElementById('Final_exam').value;
+      const CW_1 = document.getElementById('CW_1').value;
+      const CW_2 = document.getElementById('CW_2').value;
+      const Total_Points = document.getElementById('Total_Points').value;
+      const Student_Average = document.getElementById('Student_Average').value;
+      const Grade = document.getElementById('Grade').value;
+
+      const xhttpUpdate = new XMLHttpRequest();
+      xhttpUpdate.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+          Swal.fire("Success!", "แก้ไขข้อมูลผู้ป่วยสำเร็จ", "success");
+          loadTable();
+        } else {
+          Swal.fire("Failed!", "แก้ไขข้อมูลผู้ป่วยไม่สำเร็จ", "error");
+          loadTable();
+        }
+      };
+
+      xhttpUpdate.open("POST", `http://localhost:3000/register/create`);
+      xhttpUpdate.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+      xhttpUpdate.send(JSON.stringify({
+        'ID': ID,
+        'First_Name': First_Name,
+        'Last_Name': Last_Name,
+        'Midterm_exam': Midterm_exam,
+        'Final_exam': Final_exam,
+        'CW_1': CW_1,
+        'CW_2': CW_2,
+        'Total_Points': Total_Points,
+        'Student_Average': Student_Average,
+        'Grade': Grade
+      }));
     }
   });
 }
-
-function createNewStudent() {
-  const id = document.getElementById('id').value;
-  const first_name = document.getElementById('first_name').value;
-  const last_name = document.getElementById('last_name').value;
-  const mid_term_exams = document.getElementById('mid_term_exams').value;
-  const final_exam = document.getElementById('final_exam').value;
-  const coursework_1 = document.getElementById('coursework_1').value;
-  const coursework_2 = document.getElementById('coursework_2').value;
-  const total_points = document.getElementById('total_points').value;
-  const student_average = document.getElementById('student_average').value;
-  const grade = document.getElementById('grade').value;
-
-  console.log(JSON.stringify({
-    'id': id,
-    'first_name': first_name,
-    'last_name': last_name,
-    'mid_term_exams': mid_term_exams,
-    'final_exam': final_exam,
-    'coursework_1': coursework_1,
-    'coursework_2': coursework_2,
-    'total_points': total_points,
-    'student_average': student_average,
-    'grade': grade,
-  }));
-
-  const xhttp = new XMLHttpRequest();
-  xhttp.open("POST", "http://localhost:3000/register/create");
-  xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-  xhttp.send(JSON.stringify({
-    'id': id,
-    'first_name': first_name,
-    'last_name': last_name,
-    'mid_term_exams': mid_term_exams,
-    'final_exam': final_exam,
-    'coursework_1': coursework_1,
-    'coursework_2': coursework_2,
-    'total_points': total_points,
-    'student_average': student_average,
-    'grade': grade,
-  }));
-
-  xhttp.onreadystatechange = function () {
-    if (this.readyState == 4 && this.status == 200) {
-      // const objects = JSON.parse(this.responseText);
-      Swal.fire('Good job!', 'เพิ่มข้อมูลนักเรียนเสร็จสิ้น!', 'success');
-      loadTable();
-    }
-    else {
-      Swal.fire('Failed!', 'เพิ่มข้อมูลนักเรียนไม่สำเร็จ', 'error');
-      loadTable();
-    }
-  };
-}
 /////////////////////////////////// INSERT NEW INFO //////////////////////////////////
+
 
 ////////////////////////////////// DELETE /////////////////////////////////
 function studentDelete(id) {
