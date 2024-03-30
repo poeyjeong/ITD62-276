@@ -25,8 +25,8 @@ function loadTable() {
         trHTML += "<td>" + object['Total_Points'] + "</td>";
         trHTML += "<td>" + object['Student_Average'] + "</td>";
         trHTML += "<td>" + object['Grade'] + "</td>";
-        trHTML += '<td><i class ="btn text-primary bi bi-pencil-square" onclick = "showEditbox(' + object["ID"] + ')"></i>';
-        trHTML += '<i class = "btn text-danger bi bi-trash3-fill" onclick = "studentDelete(' + object["ID"] + ')"></i></td>';
+        trHTML += '<td><i class ="btn text-primary bi bi-pencil-square" onclick = "showEditbox(\'' + object["_id"] + '\')"></i>';
+        trHTML += '<i class = "btn text-danger bi bi-trash3-fill" onclick = "studentDelete(\'' + object["_id"] + '\')"></i></td>';
         trHTML += "</tr>";
 
         num++;
@@ -183,17 +183,15 @@ function showStudentCreateBox() {
 }
 /////////////////////////////////// INSERT NEW INFO //////////////////////////////////
 
-
 ////////////////////////////////// DELETE /////////////////////////////////
 function studentDelete(id) {
   console.log("Delete: ", id);
   const xhttp = new XMLHttpRequest();
-  xhttp.open("DELETE", "http://localhost:3000/register/delete");
+  xhttp.open("DELETE", "http://localhost:3000/register/delete/" + id);
   xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-  xhttp.send(JSON.stringify({ "_id": id }));
+  xhttp.send(JSON.stringify({ studentID: id }));
   xhttp.onreadystatechange = function () {
     if (this.readyState == 4 && this.status == 200) {
-      // const objects = JSON.parse(this.responseText);
       Swal.fire('Good job!', 'ลบข้อมูลนักเรียนสำเร็จ!', 'success');
       loadTable();
     } else {
@@ -201,6 +199,7 @@ function studentDelete(id) {
       loadTable();
     }
   };
+  // xhttp.send();
 }
 ////////////////////////////////// DELETE /////////////////////////////////
 
@@ -212,58 +211,57 @@ function showEditbox(id) {
   xhttp.send();
   xhttp.onreadystatechange = function () {
     if (this.readyState == 4 && this.status == 200) {
-      const object = JSON.parse(this.responseText);
-      // console.log("showEditbox", object);
-      // console.log(object);
+      const object = JSON.parse(this.responseText)[0];
+      console.log(object);
 
       Swal.fire({
         title: 'แก้ไขข้อมูลนักเรียน',
         html:
+          '<div class="mb-3"><label for="ID" class="form-label float-start">รหัสนักเรียน</label>' +
+          '<input class="form-control" id="ID" value="' + object["ID"] + '" disabled></div>' +
 
-          '<div class="mb-3"><label for="id" class="form-label float-start">รหัสนักเรียน</label>' +
-          '<input class="form-control" id="id" value="' + object["id"] + '" disabled></div>' +
+          '<div class="mb-3"><label for="First_Name" class="form-label float-start">ชื่อจริง</label>' +
+          '<input class="form-control" id="First_Name" value="' + object["First_Name"] + '"></div>' +
 
-          '<div class="mb-3"><label for="first_name" class="form-label float-start">ชื่อจริง</label>' +
-          '<input class="form-control" id="first_name" value="' + object["first_name"] + '"></div>' +
+          '<div class="mb-3"><label for="Last_Name" class="form-label float-start">นามสกุล</label>' +
+          '<input class="form-control" id="Last_Name" value="' + object["Last_Name"] + '"></div>' +
 
-          '<div class="mb-3"><label for="last_name" class="form-label float-start">นามสกุล</label>' +
-          '<input class="form-control" id="last_name" value="' + object["last_name"] + '"></div>' +
+          '<div class="mb-3"><label for="Midterm_exam" class="form-label float-start">กลางภาค</label>' +
+          '<input class="form-control" id="Midterm_exam" value="' + object["Midterm_exam"] + '"></div>' +
 
-          '<div class="mb-3"><label for="mid_term_exams" class="form-label float-start">กลางภาค</label>' +
-          '<input class="form-control" id="mid_term_exams" value="' + object["mid_term_exams"] + '"></div>' +
+          '<div class="mb-3"><label for="Final_exam" class="form-label float-start">ปลายภาค</label>' +
+          '<input class="form-control" id="Final_exam" value="' + object["Final_exam"] + '"></div>' +
 
-          '<div class="mb-3"><label for="final_exam" class="form-label float-start">ปลายภาค</label>' +
-          '<input class="form-control" id="final_exam" value="' + object["final_exam"] + '"></div>' +
+          '<div class="mb-3"><label for="CW_1" class="form-label float-start">งานที่ 1</label>' +
+          '<input class="form-control" id="CW_1" value="' + object["CW_1"] + '"></div>' +
 
-          '<div class="mb-3"><label for="coursework_2" class="form-label float-start">งานที่ 1</label>' +
-          '<input class="form-control" id="coursework_2" value="' + object["coursework_2"] + '"></div>' +
+          '<div class="mb-3"><label for="CW_2" class="form-label float-start">งานที่ 2</label>' +
+          '<input class="form-control" id="CW_2" value="' + object["CW_2"] + '"></div>' +
 
-          '<div class="mb-3"><label for="coursework_1" class="form-label float-start">งานที่ 1</label>' +
-          '<input class="form-control" id="coursework_1" value="' + object["coursework_1"] + '"></div>' +
+          '<div class="mb-3"><label for="Total_Points" class="form-label float-start">คะแนนรวม</label>' +
+          '<input class="form-control" id="Total_Points" value="' + object["Total_Points"] + '"></div>' +
 
-          '<div class="mb-3"><label for="total_points" class="form-label float-start">คะแนนรวม</label>' +
-          '<input class="form-control" id="total_points" value="' + object["total_points"] + '"></div>' +
+          '<div class="mb-3"><label for="Student_Average" class="form-label float-start">คะแนนเฉลี่ย</label>' +
+          '<input class="form-control" id="Student_Average" value="' + object["Student_Average"] + '"></div>' +
 
-          '<div class="mb-3"><label for="student_average" class="form-label float-start">คะแนนเฉลี่ย</label>' +
-          '<input class="form-control" id="student_average" value="' + object["student_average"] + '"></div>' +
-
-          '<div class="mb-3"><label for="grade" class="form-label float-start">เกรด</label>' +
-          '<input class="form-control" id="grade" value="' + object["grade"] + '"></div>',
+          '<div class="mb-3"><label for="Grade" class="form-label float-start">เกรด</label>' +
+          '<input class="form-control" id="Grade" value="' + object["Grade"] + '"></div>',
 
         focusConfirm: false,
         showCancelButton: true,
         cancelButtonText: 'ยกเลิก',
         confirmButtonText: 'บันทึก',
         preConfirm: () => {
-          const first_name = document.getElementById('first_name').value;
-          const last_name = document.getElementById('last_name').value;
-          const mid_term_exams = document.getElementById('mid_term_exams').value;
-          const final_exam = document.getElementById('final_exam').value;
-          const coursework_1 = document.getElementById('coursework_1').value;
-          const coursework_2 = document.getElementById('coursework_2').value;
-          const total_points = document.getElementById('total_points').value;
-          const student_average = document.getElementById('student_average').value;
-          const grade = document.getElementById('grade').value;
+          const ID = document.getElementById('ID').value;
+          const First_Name = document.getElementById('First_Name').value;
+          const Last_Name = document.getElementById('Last_Name').value;
+          const Midterm_exam = document.getElementById('Midterm_exam').value;
+          const Final_exam = document.getElementById('Final_exam').value;
+          const CW_1 = document.getElementById('CW_1').value;
+          const CW_2 = document.getElementById('CW_2').value;
+          const Total_Points = document.getElementById('Total_Points').value;
+          const Student_Average = document.getElementById('Student_Average').value;
+          const Grade = document.getElementById('Grade').value;
 
           const xhttpUpdate = new XMLHttpRequest();
           xhttpUpdate.onreadystatechange = function () {
@@ -280,18 +278,16 @@ function showEditbox(id) {
           xhttpUpdate.open("PUT", `http://localhost:3000/register/update/` + id);
           xhttpUpdate.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
           xhttpUpdate.send(JSON.stringify({
-            // '_id': id,
-            'id': id,
-            'first_name': first_name,
-            'last_name': last_name,
-            'mid_term_exams': mid_term_exams,
-            'final_exam': final_exam,
-            'coursework_1': coursework_1,
-            'coursework_2': coursework_2,
-            'total_points': total_points,
-            'student_average': student_average,
-            'grade': grade,
-            // studentUpdate();
+            'ID': ID,
+            'First_Name': First_Name,
+            'Last_Name': Last_Name,
+            'Midterm_exam': Midterm_exam,
+            'Final_exam': Final_exam,
+            'CW_1': CW_1,
+            'CW_2': CW_2,
+            'Total_Points': Total_Points,
+            'Student_Average': Student_Average,
+            'Grade': Grade
           }));
         }
       });
