@@ -211,7 +211,7 @@ function showEditbox(id) {
   xhttp.send();
   xhttp.onreadystatechange = function () {
     if (this.readyState == 4 && this.status == 200) {
-      const object = JSON.parse(this.responseText)[0];
+      const object = JSON.parse(this.responseText);
       console.log(object);
 
       Swal.fire({
