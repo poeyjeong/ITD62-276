@@ -367,14 +367,18 @@ function Login() {
     'pass': document.getElementById("Password").value,
   }));
   xhttp.onreadystatechange = function () {
-    if (this.readyState == 4 && this.status == 200) {
-      const objects = JSON.parse(this.responseText);
-      if (objects) {
-        Swal.fire('Good job!', 'ลงชื่อเข้าใช้สำเร็จ', 'success')
-        localStorage.setItem("auth", true);
-        localStorage.setItem("user", objects.username);
-        auth.user = objects.username;
-        checkAuth();
+    if (this.readyState == 4) {
+      if (this.status == 200) {
+        const objects = JSON.parse(this.responseText);
+        if (objects) {
+          Swal.fire('Good job!', 'ลงชื่อเข้าใช้สำเร็จ', 'success')
+          localStorage.setItem("auth", true);
+          localStorage.setItem("user", objects.username);
+          auth.user = objects.username;
+          checkAuth();
+        } else {
+          Swal.fire('ลงชื่อเข้าใช้ไม่สำเร็จ', 'ชื่อผู้ใช้งานหรือรหัสผ่านไม่ถูกต้อง', 'error')
+        }
       } else {
         Swal.fire('ลงชื่อเข้าใช้ไม่สำเร็จ', 'ชื่อผู้ใช้งานหรือรหัสผ่านไม่ถูกต้อง', 'error')
       }
