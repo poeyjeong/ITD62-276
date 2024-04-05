@@ -78,7 +78,7 @@ app.post('/login/', async (req, res) => {
 //////////////////////////////////// Login ////////////////////////////////////
 
 //////////////////////////////////// Search API ////////////////////////////////////
-//readแบบsearch คำที่อยู่หลัง :(colon) = มาจากuser
+// readแบบsearch คำที่อยู่หลัง :(colon) = มาจากuser
 app.get('/register/:searchText', async (req, res) => {
     const { searchText } = req.params;
 
