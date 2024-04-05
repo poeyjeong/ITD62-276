@@ -24,6 +24,10 @@
 </head>
 
 <body class="d-flex flex-column">
+    <!--ปุ่ม Back to top-->
+    <button onclick="topFunction()" id="myBtn" title="Go to top">
+        <i class="bi bi-arrow-up-circle"></i>
+    </button>
     <nav class="navbar bg-orange shadow-lg">
         <div class="container-fluid d-inline-block text-light m-3 align-middle">
             <i class="bi bi-p-square-fill float-start fs-3"></i>
@@ -54,10 +58,18 @@
             <input type="text" class="form-control" placeholder="ค้นหาข้อมูลนักเรียน" aria-label="Search"
                 id="KeywordSearch" onkeypress="studentSearch(event)">
         </div>
+
+        <!-- Pagination -->
+        <div style="margin-top: 20px;">
+            <nav aria-label="Page navigation example">
+                <ul class="pagination justify-content-center" id="pagination">
+                    <li class="page-item"><a class="page-link" href="#">1</a></li>
+                </ul>
+            </nav>
+        </div>
     </div>
 
     <div class="container-fluid" id="bodyContent"></div>
-
 
     <footer class="bottom-0 end-0 bg-orange text-center text-lg-start text-light">
         <!-- Copyright -->
