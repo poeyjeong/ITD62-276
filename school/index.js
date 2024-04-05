@@ -74,7 +74,7 @@ function studentSearch() {
           trHTML += "<td>" + object['Total_Points'] + "</td>";
           trHTML += "<td>" + object['Student_Average'] + "</td>";
           trHTML += "<td>" + object['Grade'] + "</td>";
-          trHTML += '<td><i class ="btn text-primary bi bi-pencil-square" onclick = "showEditbox(' + object["ID"] + ')"></i>';
+          trHTML += '<td><i class ="btn text-primary bi bi-pencil-square" onclick = "showEditbox(\'' + object["ID"] + '\')"></i>';
           trHTML += '<i class = "btn text-danger bi bi-trash3-fill" onclick = "studentDelete(' + object["ID"] + ')"></i></td>';
           trHTML += "</tr>";
 
@@ -264,6 +264,22 @@ function showEditbox(id) {
           const Grade = document.getElementById('Grade').value;
 
           const xhttpUpdate = new XMLHttpRequest();
+
+          xhttpUpdate.open("PUT", `http://localhost:3000/register/update/` + id);
+          xhttpUpdate.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+          xhttpUpdate.send(JSON.stringify({
+            '_id': id,
+            'First_Name': First_Name,
+            'Last_Name': Last_Name,
+            'Midterm_exam': Midterm_exam,
+            'Final_exam': Final_exam,
+            'CW_1': CW_1,
+            'CW_2': CW_2,
+            'Total_Points': Total_Points,
+            'Student_Average': Student_Average,
+            'Grade': Grade
+          }));
+
           xhttpUpdate.onreadystatechange = function () {
             if (this.readyState == 4 && this.status == 200) {
               Swal.fire("Success!", "แก้ไขข้อมูลนักเรียนสำเร็จ", "success");
@@ -275,20 +291,6 @@ function showEditbox(id) {
 
           };
 
-          xhttpUpdate.open("PUT", `http://localhost:3000/register/update/` + id);
-          xhttpUpdate.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-          xhttpUpdate.send(JSON.stringify({
-            'ID': ID,
-            'First_Name': First_Name,
-            'Last_Name': Last_Name,
-            'Midterm_exam': Midterm_exam,
-            'Final_exam': Final_exam,
-            'CW_1': CW_1,
-            'CW_2': CW_2,
-            'Total_Points': Total_Points,
-            'Student_Average': Student_Average,
-            'Grade': Grade
-          }));
         }
       });
     }
@@ -300,10 +302,13 @@ function showEditbox(id) {
 /////////////////////////// AUTHENTICATION //////////////////////////////
 var auth = { status: false, user: null }
 
-checkAuth();
+window.onload = function(){
+  checkAuth()
+}
 
 function checkAuth() {
-  if (Boolean(localStorage.getItem("auth")) === true) {
+  const get_auth = localStorage.getItem("auth")
+  if (Boolean(get_auth) === true) {
     auth.status = true;
     auth.user = localStorage.getItem("user");
 
