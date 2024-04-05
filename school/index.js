@@ -1,15 +1,15 @@
 var lastestID;
 
 //////////////////////////////////// Load Table ///////////////////////////////////
-function loadTable() {
+function loadTable(page = 1, size = 100) {
   const xhttp = new XMLHttpRequest();
-  xhttp.open("GET", "http://localhost:3000/register/");
+  xhttp.open("GET", `http://localhost:3000/register?skip=${(page - 1) * size}&limit=${size}`);
   xhttp.send();
   xhttp.onreadystatechange = function () {
     if (this.readyState == 4 && this.status == 200) {
       console.log(this.responseText);
       var trHTML = "";
-      var num = 1;
+      var num = ((page - 1) * size) + 1;
       const objects = JSON.parse(this.responseText);
 
       for (let object of objects) {
@@ -32,7 +32,11 @@ function loadTable() {
         num++;
         lastestID = object["ID"];
       }
-
+      var paginationHTML = ''
+      for (let pageNumber of [...Array(page = 5).keys()].map(i => i + 1)) {
+        paginationHTML += `<li class="page-item" ><a class="page-link" href="#" onclick="loadTable(${pageNumber},100)">${pageNumber}</a></li>`
+      }
+      document.getElementById("pagination").innerHTML = paginationHTML;
       document.getElementById("mytable").innerHTML = trHTML;
     } else {
       var trHTML = "";
@@ -302,7 +306,7 @@ function showEditbox(id) {
 /////////////////////////// AUTHENTICATION //////////////////////////////
 var auth = { status: false, user: null }
 
-window.onload = function(){
+window.onload = function(){ //รอ HTML โหลดเสร็จก่อนค่อยเช็ค Auth
   checkAuth()
 }
 
@@ -394,3 +398,25 @@ function Logout() {
   checkAuth();
 }
 /////////////////////////// AUTHENTICATION //////////////////////////////
+
+////////////////////////// BACK TO TOP //////////////////////////
+// Get the button:
+let mybutton = document.getElementById("myBtn");
+
+// When the user scrolls down 20px from the top of the document, show the button
+window.onscroll = function() {scrollFunction()};
+
+function scrollFunction() {
+  if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+    mybutton.style.display = "block";
+  } else {
+    mybutton.style.display = "none";
+  }
+}
+
+// When the user clicks on the button, scroll to the top of the document
+function topFunction() {
+  document.body.scrollTop = 0; // For Safari
+  document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
+}
+////////////////////////// BACK TO TOP //////////////////////////
