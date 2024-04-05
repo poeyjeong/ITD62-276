@@ -3,5 +3,9 @@
 } */
 
 .bg-orange {
-    background-color: #fd7e14;
+    background-color: #496989;
 }
+
+.white-border {
+    border-color: white;
+  }
