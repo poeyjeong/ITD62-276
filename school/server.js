@@ -42,7 +42,7 @@ app.get('/register', async (req, res) => { //หลังทับมี path �
         await client.connect();
         const database = client.db("SchoolDB");
         const collection = database.collection("studentRecord");
-        const students = await collection.find({}).toArray();
+        const students = await collection.find({}).skip(Number(skip)).limit(Number(limit)).sort({ _id: 1 }).toArray();
         res.status(200).json(students);
     } catch (err) {
         console.error('Database error:', err);
