@@ -372,7 +372,8 @@ function Login() {
       if (objects) {
         Swal.fire('Good job!', 'ลงชื่อเข้าใช้สำเร็จ', 'success')
         localStorage.setItem("auth", true);
-        localStorage.setItem("user", objects['username']);
+        localStorage.setItem("user", objects.username);
+        auth.user = objects.username;
         checkAuth();
       } else {
         Swal.fire('ลงชื่อเข้าใช้ไม่สำเร็จ', 'ชื่อผู้ใช้งานหรือรหัสผ่านไม่ถูกต้อง', 'error')
