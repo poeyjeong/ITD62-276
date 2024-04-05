@@ -69,7 +69,7 @@ app.post('/login/', async (req, res) => {
             return res.status(401).send({ message: "Invalid username or password" });
         }
 
-        res.status(200).send({ message: "Login successful", user: user });
+        res.status(200).send({ message: "Login successful", username: user.username });
     } catch (err) {
         console.error('Database error:', err);
         res.status(500).send('Database error');
