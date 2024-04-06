@@ -63,7 +63,13 @@
 	* หากยังไม่ยืนยันตัวตน -> `bodyContent` แสดงฟอร์ม login
 	
 ## Creation
->
+* **server.js:** สร้าง API endpoint `/register/:create` ใช้ method `POST` รับข้อมูลนักเรียนใหม่จากหน้าเว็บ
+* รับ(request)ข้อมูลผ่าน `req.body` ในหน้าเว็บจาก user แล้ว `insertOne()` ใน collection
+* **index.js:** user กดปุ่ม "เพิ่มข้อมูล" จะเรียกใช้ฟังก์ชัน `showStudentCreateBox()` เพื่อแสดงกล่องกรอกข้อมูล
+* เมื่อกดปุ่ม "บันทึก" ข้อมูลจะส่งไปยัง server ผ่าน `XMLHttpRequest` แล้วแจ้งเตือนว่าเสร็จสิ้นหรือไม่
+* **index.html:** มี button เพิ่มข้อมูลที่ `onclick` แล้วจะเรียก `showStudentCreateBox()`
+* `id="bodyContent"` ไว้แสดงข้อมูลจาก index.js
+
 ## Reading
 **Read All API**
 * **server:** เรียก `/register` ผ่าน `HTTP GET request` จาก client
@@ -78,15 +84,15 @@
 * **index.js:** ฟังก์ชัน `studentSearch()` เพื่อค้นหาข้อมูลโดยใช้ API `GET /register/:searchText` โดยส่งคำค้นหามาในพารามิเตอร์ `searchText` ของ URL + ส่ง request แบบ AJAX ไปยัง server.js -> สามารถค้นหาข้อมูลนักเรียนได้ตามคำค้นหาที่ผู้ใช้ระบุใน input field ของ website
 	> ผลลัพธ์แสดงผ่านตารางข้อมูลที่โหลดใหม่ทันที ไม่ต้องโหลดหน้า website ใหม่
 
-**Updating**
->
- **Deletion**
- - เมื่อลบได้ - แสดงข้อความ
- - เมื่อลบไม่ได้ - แสดงข้อความ
- 
- - กรอกข้อมูลถูกต้อง
-	 - แสดงข้อมูลที่ดึงจากฐานข้อมูล
-	 - แสดงข้อความ "ลงชื่อเข้าใช้สำเร็จ"
- - กรอกข้อมูลผิด
-	 - ไม่แสดงข้อมูลที่ดึงจากฐานข้อมูล
-	 - แสดงข้อความ "ลงชื่อเข้าใช้ไม่สำเร็จ"
+## Updating
+* **server.js:** สร้าง API endpoint ชื่อ `/register/update/:id` ใช้ method `PUT` รับข้อมูลการอัปเดตข้อมูลของนักเรียน
+* รับข้อมูลการอัปเดตผ่าน `req.body` ในหน้าเว็บจาก user แล้ว `updateOne()` เพื่ออัปเดตข้อมูลของนักเรียนที่มี `_id` ตรงกับข้อมูลที่ส่งมา
+* **index.js:** เมื่อกดปุ่มแก้ไข จะเรียกใช้ฟังก์ชัน `showEditbox(id)` เพื่อสร้างกล่องข้อความแสดงข้อมูลนักเรียนที่ต้องการแก้ไข
+* เมื่อกดปุ่ม"บันทึก" ข้อมูล(ที่แก้ไข)จะส่งไป server โดย `HTTP PUT request` แล้วแจ้งเตือนโดย  `Swal.fire()` ของ SweetAlert2.
+	>มีการเรียก showEditbox() ใน  loadTable() โดยใส่ _id ของข้อมูลนั้นๆ ลงไป
+
+## Deletion
+* **server.js:** -   สร้าง API endpoint ชื่อ `/register/delete/:id` โดยใช้ method `DELETE` เพื่อรับข้อมูลการลบข้อมูลของนักเรียน
+* รับ ID ของนักเรียนผ่าน `req.params.id` จากนั้น  `deleteOne()` เพื่อลบข้อมูลนักเรียนที่มี `_id` ตรงกับ ID ที่รับมา
+ * **index.js:** เมื่อกดปุ่มลบในแถวข้อมูลที่ต้องการลบ จะเรียกใช้ฟังก์ชัน `studentDelete(id)` แล้วแจ้งเตือนโดย  `Swal.fire()` ของ SweetAlert2.
+	>มีการเรียก studentDelete() ใน  loadTable() โดยใส่ _id ของข้อมูลนั้นๆ ลงไป
